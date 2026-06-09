@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sound Connections Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c2430;
+      --muted: #667085;
+      --paper: #ffffff;
+      --soft: #f4f7fb;
+      --line: #c9d3df;
+      --line-strong: #26384c;
+      --accent: #0f6b63;
+      --accent-soft: #dff3ef;
+      --gold: #b77a17;
+      --gold-soft: #fff0d6;
+      --bad: #a33b32;
+      --good: #1d7a46;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--soft);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav-link {
+      display: inline-block;
+      border: 2px solid var(--line-strong);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 10px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .puzzle {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 22px minmax(300px, 1.2fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .left,
+    .right {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .left {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      background: linear-gradient(180deg, #fff, #fbfcfe);
+    }
+
+    .right {
+      display: grid;
+      gap: 8px;
+      background: #fff;
+    }
+
+    .divider {
+      border-left: 3px solid var(--line-strong);
+      border-right: 3px solid var(--line-strong);
+      background: repeating-linear-gradient(
+        180deg,
+        var(--line-strong) 0,
+        var(--line-strong) 8px,
+        transparent 8px,
+        transparent 14px
+      );
+      border-radius: 4px;
+    }
+
+    .row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .squares {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      min-height: 36px;
+    }
+
+    .square {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-strong);
+      background: #fff;
+      color: var(--ink);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .left .square {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    .right .square {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .clue {
+      min-height: 42px;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .answer-line {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .answer-line input,
+    .category input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-transform: uppercase;
+    }
+
+    .mini-button {
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 6px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .sound {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sound strong {
+      color: var(--accent);
+    }
+
+    .category {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .status {
+      min-height: 24px;
+      margin: 10px 0 0;
+      font-weight: 700;
+    }
+
+    .status.good {
+      color: var(--good);
+    }
+
+    .status.bad {
+      color: var(--bad);
+    }
+
+    .note {
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+    }
+
+    .example-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .example-list li {
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .example-list li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    @media (max-width: 920px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      main {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .panel {
+        padding: 12px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .divider {
+        height: 12px;
+        border: 0;
+        border-top: 3px solid var(--line-strong);
+        border-bottom: 3px solid var(--line-strong);
+        background: repeating-linear-gradient(
+          90deg,
+          var(--line-strong) 0,
+          var(--line-strong) 8px,
+          transparent 8px,
+          transparent 14px
+        );
+      }
+
+      .square {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+      }
+
+      .answer-line,
+      .category {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Sound Connections</h1>
+        <p class="muted">A playable demo of the sound-alike connection puzzle.</p>
+        <div class="nav-links">
+          <a class="nav-link" href="./index.html">Chain Mind Context</a>
+          <a class="nav-link" href="./demo.html">Chain Mind Demo</a>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="button secondary" id="clear" type="button">Clear</button>
+        <button class="button secondary" id="fill-right" type="button">Fill Clue Answers</button>
+        <button class="button" id="reveal-all" type="button">Reveal All</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="panel">
+        <h2>Puzzle Grid</h2>
+        <div class="puzzle" id="puzzle"></div>
+        <div class="category">
+          <input id="category" autocomplete="off" placeholder="Connection">
+          <button class="button" id="check-category" type="button">Check Connection</button>
+        </div>
+        <p class="status" id="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="panel">
+        <h2>What The Demo Shows</h2>
+        <p class="note">Solve the right-hand clue. Its answer sounds like something found in, on, or with the left-hand answer.</p>
+        <p>This page is a second puzzle format sitting alongside Chain Mind. It keeps the crossword-grid language, but swaps letter extraction for a sound connection.</p>
+        <p>The left-hand answers all belong to one group. Once you have enough of them, enter the connection at the bottom.</p>
+        <h3>Example Logic</h3>
+        <ul class="example-list">
+          <li><strong>Peal</strong> sounds like <strong>peel</strong>, which points to <strong>orange</strong>.</li>
+          <li><strong>Corps</strong> sounds like <strong>core</strong>, which points to <strong>apple</strong>.</li>
+          <li><strong>Cedes</strong> sounds like <strong>seeds</strong>, which points to <strong>pomegranate</strong>.</li>
+        </ul>
+        <h3>Setter Notes</h3>
+        <p>This is deliberately a gentle version: the sound bridge is shown after a correct clue answer. A harder version could hide that bridge and leave only the grid lengths.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const rows = [
+      {
+        left: "ORANGE",
+        right: "PEAL",
+        sound: "PEEL",
+        clue: "Loud, resounding noise.",
+        note: "Orange peel"
+      },
+      {
+        left: "APPLE",
+        right: "CORPS",
+        sound: "CORE",
+        clue: "Specialised military group.",
+        note: "Apple core"
+      },
+      {
+        left: "POMEGRANATE",
+        right: "CEDES",
+        sound: "SEEDS",
+        clue: "Hands over power.",
+        note: "Pomegranate seeds"
+      },
+      {
+        left: "CHERRY",
+        right: "STORK",
+        sound: "STALK",
+        clue: "One bird in a muster.",
+        note: "Cherry stalk"
+      },
+      {
+        left: "PEACH",
+        right: "PITT",
+        sound: "PIT",
+        clue: "British Prime Minister, William.",
+        note: "Peach pit"
+      }
+    ];
+
+    const puzzle = document.querySelector("#puzzle");
+    const status = document.querySelector("#status");
+    const category = document.querySelector("#category");
+
+    function normalise(value) {
+      return value.trim().toUpperCase().replace(/[^A-Z]/g, "");
+    }
+
+    function makeSquares(word, value) {
+      return word.split("").map((_, index) => {
+        const letter = value[index] || "";
+        return `<span class="square">${letter}</span>`;
+      }).join("");
+    }
+
+    function render() {
+      puzzle.innerHTML = "";
+
+      rows.forEach((row, index) => {
+        const item = document.createElement("div");
+        item.className = "row";
+        item.innerHTML = `
+          <section class="left" aria-label="Left answer ${index + 1}">
+            <div class="row-head">
+              <span>Left answer ${index + 1}</span>
+              <span>${row.left.length} letters</span>
+            </div>
+            <div class="squares" data-left-squares="${index}">${makeSquares(row.left, "")}</div>
+            <div class="answer-line">
+              <input data-left="${index}" autocomplete="off" placeholder="Derived answer">
+              <button class="mini-button" data-check-left="${index}" type="button">Check</button>
+            </div>
+          </section>
+          <div class="divider" aria-hidden="true"></div>
+          <section class="right" aria-label="Right clue ${index + 1}">
+            <div class="row-head">
+              <span>Right clue ${index + 1}</span>
+              <span>${row.right.length} letters</span>
+            </div>
+            <p class="clue">${row.clue}</p>
+            <div class="squares" data-right-squares="${index}">${makeSquares(row.right, "")}</div>
+            <div class="answer-line">
+              <input data-right="${index}" autocomplete="off" placeholder="Clue answer">
+              <button class="mini-button" data-check-right="${index}" type="button">Check</button>
+            </div>
+            <div class="sound" data-sound="${index}"></div>
+          </section>
+        `;
+        puzzle.appendChild(item);
+      });
+
+      puzzle.addEventListener("input", handleInput);
+      puzzle.addEventListener("click", handleClick);
+    }
+
+    function handleInput(event) {
+      const leftIndex = event.target.dataset.left;
+      const rightIndex = event.target.dataset.right;
+
+      if (leftIndex !== undefined) {
+        updateLeft(Number(leftIndex), event.target.value);
+      }
+
+      if (rightIndex !== undefined) {
+        updateRight(Number(rightIndex), event.target.value);
+      }
+    }
+
+    function handleClick(event) {
+      const leftIndex = event.target.dataset.checkLeft;
+      const rightIndex = event.target.dataset.checkRight;
+
+      if (leftIndex !== undefined) {
+        checkLeft(Number(leftIndex));
+      }
+
+      if (rightIndex !== undefined) {
+        checkRight(Number(rightIndex));
+      }
+    }
+
+    function updateLeft(index, value) {
+      const row = rows[index];
+      const clean = normalise(value).slice(0, row.left.length);
+      document.querySelector(`[data-left-squares="${index}"]`).innerHTML = makeSquares(row.left, clean);
+    }
+
+    function updateRight(index, value) {
+      const row = rows[index];
+      const clean = normalise(value).slice(0, row.right.length);
+      document.querySelector(`[data-right-squares="${index}"]`).innerHTML = makeSquares(row.right, clean);
+
+      if (clean === row.right) {
+        showSound(index);
+      } else {
+        document.querySelector(`[data-sound="${index}"]`).textContent = "";
+      }
+    }
+
+    function checkLeft(index) {
+      const input = document.querySelector(`[data-left="${index}"]`);
+      const row = rows[index];
+      if (normalise(input.value) === row.left) {
+        setStatus(`${row.left} is right.`, "good");
+      } else {
+        setStatus(`That left answer is not ${row.left.length} letters in this demo.`, "bad");
+      }
+    }
+
+    function checkRight(index) {
+      const input = document.querySelector(`[data-right="${index}"]`);
+      const row = rows[index];
+      if (normalise(input.value) === row.right) {
+        showSound(index);
+        setStatus(`${row.right} is right. It sounds like ${row.sound.toLowerCase()}.`, "good");
+      } else {
+        setStatus(`That clue answer is not quite right.`, "bad");
+      }
+    }
+
+    function showSound(index) {
+      const row = rows[index];
+      document.querySelector(`[data-sound="${index}"]`).innerHTML = `Sounds like <strong>${row.sound}</strong>: ${row.note}.`;
+    }
+
+    function fillRight() {
+      rows.forEach((row, index) => {
+        const input = document.querySelector(`[data-right="${index}"]`);
+        input.value = row.right;
+        updateRight(index, row.right);
+      });
+      setStatus("Right-hand clue answers filled. Now use the sound bridges to solve the left.", "good");
+    }
+
+    function revealAll() {
+      rows.forEach((row, index) => {
+        const left = document.querySelector(`[data-left="${index}"]`);
+        const right = document.querySelector(`[data-right="${index}"]`);
+        left.value = row.left;
+        right.value = row.right;
+        updateLeft(index, row.left);
+        updateRight(index, row.right);
+        showSound(index);
+      });
+      category.value = "FRUIT";
+      setStatus("Solved: the connection is FRUIT.", "good");
+    }
+
+    function clearAll() {
+      document.querySelectorAll("input").forEach((input) => {
+        input.value = "";
+      });
+      rows.forEach((row, index) => {
+        updateLeft(index, "");
+        updateRight(index, "");
+        document.querySelector(`[data-sound="${index}"]`).textContent = "";
+      });
+      setStatus("", "");
+    }
+
+    function checkCategory() {
+      const answer = normalise(category.value);
+      if (answer === "FRUIT" || answer === "FRUITS") {
+        setStatus("Yes. Orange, apple, pomegranate, cherry and peach are all fruit.", "good");
+      } else {
+        setStatus("The connection is not quite that in this demo.", "bad");
+      }
+    }
+
+    function setStatus(message, type) {
+      status.textContent = message;
+      status.className = `status ${type || ""}`.trim();
+    }
+
+    document.querySelector("#fill-right").addEventListener("click", fillRight);
+    document.querySelector("#reveal-all").addEventListener("click", revealAll);
+    document.querySelector("#clear").addEventListener("click", clearAll);
+    document.querySelector("#check-category").addEventListener("click", checkCategory);
+    category.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") checkCategory();
+    });
+
+    render();
+  </script>
+</body>
+</html>

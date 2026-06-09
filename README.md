@@ -14,4 +14,10 @@ Playable demo:
 https://JMCPublic.github.io/chain-mind/demo.html
 ```
 
+Sound Connections demo:
+
+```text
+https://JMCPublic.github.io/chain-mind/sound-connections.html
+```
+
 Note: this is only a light access screen for convenience. A public GitHub repo is still public, so do not upload the Word document here if you want to keep the idea out of casual view.
