@@ -385,6 +385,24 @@
       display: none;
     }
 
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .nav-link {
+      display: inline-block;
+      border: 2px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 10px;
+      font-weight: 800;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
     .gate {
       width: min(520px, calc(100% - 24px));
       margin: 32px auto;
@@ -491,6 +509,9 @@
   <section class="gate" id="gate">
     <h1>Chain Mind Demo</h1>
     <p class="muted">Enter the access code to open the playable mockup.</p>
+    <div class="nav-links">
+      <a class="nav-link" href="./index.html">&larr; Concept Summary</a>
+    </div>
     <label for="code">Access code</label>
     <input id="code" autocomplete="off" inputmode="text">
     <button class="button" id="unlock" type="button">Open Demo</button>
@@ -503,6 +524,9 @@
       <div>
         <h1>Chain Mind Demo</h1>
         <p class="muted">A playable mockup using the PLANETS example.</p>
+        <div class="nav-links">
+          <a class="nav-link" href="./index.html">&larr; Concept Summary</a>
+        </div>
       </div>
       <div class="controls">
         <button class="button secondary" id="clear">Clear</button>
@@ -546,6 +570,12 @@
         <div class="legend"><span class="legend-swatch"></span><span>Ordinary letter square</span></div>
         <div class="legend"><span class="legend-swatch join"></span><span>Shared last/first chain letter</span></div>
         <div class="legend"><span class="legend-swatch black"></span><span>Open-chain break</span></div>
+
+        <h3>Variations</h3>
+        <p>This demo shows the easy open-chain version. Other versions can use a closed circle, fewer centre-strip guides, mixed clue themes, or no guides at all.</p>
+        <div class="nav-links">
+          <a class="nav-link" href="./index.html">&larr; Concept Summary</a>
+        </div>
       </aside>
     </section>
   </main>
@@ -619,6 +649,7 @@
 
     function unlockDemo() {
       if (code.value.trim().toUpperCase() === expectedCode) {
+        sessionStorage.setItem("chainMindUnlocked", "yes");
         gate.classList.add("hidden");
         game.classList.remove("hidden");
         gateError.textContent = "";
@@ -800,6 +831,11 @@
     code.addEventListener("keydown", (event) => {
       if (event.key === "Enter") unlockDemo();
     });
+
+    if (sessionStorage.getItem("chainMindUnlocked") === "yes") {
+      gate.classList.add("hidden");
+      game.classList.remove("hidden");
+    }
 
     renderBoard();
     renderLabels();

@@ -140,6 +140,29 @@
       font-weight: 700;
     }
 
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .nav-link {
+      display: inline-block;
+      border: 2px solid #111;
+      border-radius: 0;
+      background: #fff;
+      color: #111;
+      padding: 8px 10px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav-link.primary {
+      background: #111;
+      color: #fff;
+    }
+
     .hidden {
       display: none;
     }
@@ -172,12 +195,17 @@
       <input id="code" autocomplete="off" inputmode="text">
       <button id="unlock" type="button">Open</button>
       <p id="error" class="error" aria-live="polite"></p>
+      <p class="muted">Or go straight to the playable version:</p>
+      <p><a class="nav-link primary" href="./demo.html">Demo Game &rarr;</a></p>
       <p class="muted">Note: this is a light access screen for sharing, not strong security.</p>
     </section>
 
     <article id="content" class="panel hidden">
       <h1>Chain Mind: Linear Crossword / Anagram Puzzle Concept</h1>
       <p class="muted">A short explanation of the puzzle idea.</p>
+      <div class="nav-links">
+        <a class="nav-link primary" href="./demo.html">Demo Game &rarr;</a>
+      </div>
 
       <h2>The Core Idea</h2>
       <p>The puzzle starts like a set of crossword clues. Each clue has a specific answer, usually a single word.</p>
@@ -281,6 +309,17 @@
         <li>Very hard: the clue answers are from a different field, so the final answer cannot be guessed by theme alone.</li>
       </ol>
 
+      <h2>Game Variations</h2>
+      <p>The same idea can be played in different forms.</p>
+      <ul>
+        <li>Open chain: a black square marks the break between the last and first answers.</li>
+        <li>Closed circle: the last answer links back to the first answer.</li>
+        <li>Guided centre strip: every final-answer box has a guide such as <code>7(3)</code>.</li>
+        <li>Harder centre strip: only some boxes have guides, or none do.</li>
+        <li>Themed clues: the clue answers point towards the final answer.</li>
+        <li>Mixed-field clues: the clue answers come from different areas, so the final answer only emerges from the chain and extraction.</li>
+      </ul>
+
       <h2>The Key Rule to Make Clear</h2>
       <p>Every puzzle should tell the solver how to read the extracted letters.</p>
       <p>They might be read in clue order, in chain order, or in another specified order.</p>
@@ -290,7 +329,9 @@
 The clues produce words.
 The words form a chain.
 Selected letters from those words reveal the final answer.</pre>
-      <p><a href="./demo.html">Open the playable demo game</a></p>
+      <div class="nav-links">
+        <a class="nav-link primary" href="./demo.html">Demo Game &rarr;</a>
+      </div>
     </article>
   </main>
 
@@ -311,6 +352,7 @@ Selected letters from those words reveal the final answer.</pre>
     async function unlock() {
       const hash = await sha256(input.value);
       if (hash === expectedHash) {
+        sessionStorage.setItem("chainMindUnlocked", "yes");
         gate.classList.add("hidden");
         content.classList.remove("hidden");
         error.textContent = "";
@@ -326,6 +368,11 @@ Selected letters from those words reveal the final answer.</pre>
         unlock();
       }
     });
+
+    if (sessionStorage.getItem("chainMindUnlocked") === "yes") {
+      gate.classList.add("hidden");
+      content.classList.remove("hidden");
+    }
   </script>
 </body>
 </html>
