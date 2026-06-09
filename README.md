@@ -8,4 +8,10 @@ Open the phone-friendly page here once GitHub Pages is switched on:
 https://JMCPublic.github.io/chain-mind/
 ```
 
+Playable demo:
+
+```text
+https://JMCPublic.github.io/chain-mind/demo.html
+```
+
 Note: this is only a light access screen for convenience. A public GitHub repo is still public, so do not upload the Word document here if you want to keep the idea out of casual view.

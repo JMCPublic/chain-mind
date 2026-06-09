@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chain Mind Demo Game</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5d6875;
+      --paper: #ffffff;
+      --soft: #f4f6f8;
+      --line: #cfd7df;
+      --strong: #223142;
+      --accent: #0f766e;
+      --accent-soft: #d9f2ee;
+      --warn: #9f3412;
+      --black: #121417;
+      --ok: #0f7b3f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--soft);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 17px;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(560px, 1fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .board-panel {
+      min-height: 700px;
+    }
+
+    .board {
+      position: relative;
+      width: min(680px, 100%);
+      aspect-ratio: 1;
+      margin: 8px auto 0;
+    }
+
+    .ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid #d9e0e7;
+      background:
+        radial-gradient(circle, transparent 0 43%, rgba(15, 118, 110, 0.06) 43.5% 57%, transparent 57.5%),
+        var(--paper);
+    }
+
+    .cell {
+      position: absolute;
+      width: clamp(28px, 5vw, 42px);
+      height: clamp(28px, 5vw, 42px);
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      transform: translate(-50%, -50%);
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cell.join {
+      border: 3px solid var(--strong);
+      background: #fffef7;
+    }
+
+    .cell.black {
+      border-color: var(--black);
+      background: var(--black);
+      color: transparent;
+      cursor: default;
+    }
+
+    .cell.active {
+      outline: 4px solid var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .cell.filled {
+      background: #eefaf7;
+    }
+
+    .cell.wrong {
+      background: #fff3ed;
+      border-color: var(--warn);
+    }
+
+    .word-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .centre {
+      position: absolute;
+      inset: 34% 9%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .answer-strip {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(34px, 52px));
+      gap: 6px;
+      align-items: end;
+      justify-content: center;
+    }
+
+    .answer-slot {
+      display: grid;
+      grid-template-rows: 22px 48px;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .guide {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .slot-box {
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--strong);
+      background: #fff;
+      font-size: 24px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .slot-box.filled {
+      background: var(--accent-soft);
+      color: #064e46;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    .clue-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .clue {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .clue.active {
+      border-color: var(--accent);
+      background: #f0fbf8;
+    }
+
+    .clue-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .answer-input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      text-transform: uppercase;
+    }
+
+    .status {
+      min-height: 24px;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.warn {
+      color: var(--warn);
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend-swatch {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .legend-swatch.join {
+      border: 3px solid var(--strong);
+      background: #fffef7;
+    }
+
+    .legend-swatch.black {
+      border-color: var(--black);
+      background: var(--black);
+    }
+
+    .mobile-note {
+      display: none;
+    }
+
+    .gate {
+      width: min(520px, calc(100% - 24px));
+      margin: 32px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .gate label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: 700;
+    }
+
+    .gate input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-transform: uppercase;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 920px) {
+      main {
+        padding: 12px;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .board-panel {
+        min-height: auto;
+      }
+
+      .board {
+        width: min(100%, 640px);
+      }
+    }
+
+    @media (max-width: 560px) {
+      body {
+        font-size: 15px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .panel {
+        padding: 12px;
+      }
+
+      .cell {
+        width: 27px;
+        height: 27px;
+        font-size: 13px;
+      }
+
+      .word-label {
+        display: none;
+      }
+
+      .centre {
+        inset: 32% 6%;
+      }
+
+      .answer-strip {
+        grid-template-columns: repeat(7, minmax(30px, 1fr));
+        gap: 4px;
+        width: 100%;
+      }
+
+      .answer-slot {
+        grid-template-rows: 18px 34px;
+      }
+
+      .guide {
+        font-size: 10px;
+      }
+
+      .slot-box {
+        font-size: 18px;
+      }
+
+      .mobile-note {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="gate" id="gate">
+    <h1>Chain Mind Demo</h1>
+    <p class="muted">Enter the access code to open the playable mockup.</p>
+    <label for="code">Access code</label>
+    <input id="code" autocomplete="off" inputmode="text">
+    <button class="button" id="unlock" type="button">Open Demo</button>
+    <p class="status warn" id="gate-error" aria-live="polite"></p>
+    <p class="muted">This is a light access screen for sharing, not strong security.</p>
+  </section>
+
+  <main id="game" class="hidden">
+    <header>
+      <div>
+        <h1>Chain Mind Demo</h1>
+        <p class="muted">A playable mockup using the PLANETS example.</p>
+      </div>
+      <div class="controls">
+        <button class="button secondary" id="clear">Clear</button>
+        <button class="button secondary" id="fill-chain">Fill Chain</button>
+        <button class="button" id="reveal-answer">Reveal Centre</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="panel board-panel">
+        <h2>Outer Chain And Centre Answer</h2>
+        <p class="muted mobile-note">Tip: on a phone, use the clue boxes below. The circle updates as you type.</p>
+        <div class="board" aria-label="Circular Chain Mind board">
+          <div class="ring"></div>
+          <div id="cells"></div>
+          <div id="labels"></div>
+          <div class="centre">
+            <div>
+              <h2>Final Answer</h2>
+              <p class="muted">Use the bracket guides above the boxes.</p>
+            </div>
+            <div class="answer-strip" id="answer-strip"></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h2>How To Play</h2>
+        <p>Solve the clues, then place the answers into the outer circle so the last letter of one answer is the first letter of the next.</p>
+        <p>The thick-border boxes are shared chain letters. The black square marks the break in this open-chain version.</p>
+        <p>Then use the centre guides, such as <strong>7(3)</strong>, to take letters from the solved outer answers and fill the final answer strip.</p>
+
+        <h3>Clues</h3>
+        <div class="clue-list" id="clues"></div>
+        <p class="status" id="status" aria-live="polite"></p>
+
+        <h3>Legend</h3>
+        <div class="legend"><span class="legend-swatch"></span><span>Ordinary letter square</span></div>
+        <div class="legend"><span class="legend-swatch join"></span><span>Shared last/first chain letter</span></div>
+        <div class="legend"><span class="legend-swatch black"></span><span>Open-chain break</span></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const words = [
+      {
+        answer: "CALADAN",
+        guide: "7(3)",
+        extraction: [{ index: 2, finalIndex: 1 }],
+        clue: "Desert planet ruled by House Atreides in Dune."
+      },
+      {
+        answer: "NEPTUNE",
+        guide: "7(3)",
+        extraction: [{ index: 2, finalIndex: 0 }],
+        clue: "The eighth planet from the Sun."
+      },
+      {
+        answer: "EARTH",
+        guide: "5(1)",
+        extraction: [{ index: 0, finalIndex: 4 }],
+        clue: "Our home planet."
+      },
+      {
+        answer: "HOTH",
+        guide: "4(3)",
+        extraction: [{ index: 2, finalIndex: 5 }],
+        clue: "Icy rebel base world in The Empire Strikes Back."
+      },
+      {
+        answer: "HADES",
+        guide: "5(1)(5)",
+        extraction: [{ index: 0, finalIndex: 2 }, { index: 4, finalIndex: 6 }],
+        clue: "Mythic underworld, also sometimes treated like a place name."
+      },
+      {
+        answer: "SATURN",
+        guide: "6(6)",
+        extraction: [{ index: 5, finalIndex: 3 }],
+        clue: "Ringed planet named after a Roman god."
+      }
+    ];
+
+    const finalAnswer = "PLANETS";
+    const expectedCode = "PLANETS";
+    const centreGuides = ["7(3)", "7(3)", "5(1)", "6(6)", "5(1)", "4(3)", "5(5)"];
+    const chainLetters = "CALADANEPTUNEARTHOTHADESATURN";
+    const joins = new Set([6, 12, 16, 19, 23]);
+    const wordRanges = [
+      { label: "Caladan", start: 0, end: 6 },
+      { label: "Neptune", start: 6, end: 12 },
+      { label: "Earth", start: 12, end: 16 },
+      { label: "Hoth", start: 16, end: 19 },
+      { label: "Hades", start: 19, end: 23 },
+      { label: "Saturn", start: 23, end: 28 }
+    ];
+    const totalCells = chainLetters.length + 1;
+    const blackIndex = totalCells - 1;
+    const userLetters = Array(chainLetters.length).fill("");
+
+    const cellsRoot = document.querySelector("#cells");
+    const labelsRoot = document.querySelector("#labels");
+    const cluesRoot = document.querySelector("#clues");
+    const answerRoot = document.querySelector("#answer-strip");
+    const status = document.querySelector("#status");
+    const gate = document.querySelector("#gate");
+    const game = document.querySelector("#game");
+    const code = document.querySelector("#code");
+    const gateError = document.querySelector("#gate-error");
+
+    function unlockDemo() {
+      if (code.value.trim().toUpperCase() === expectedCode) {
+        gate.classList.add("hidden");
+        game.classList.remove("hidden");
+        gateError.textContent = "";
+      } else {
+        gateError.textContent = "That code did not open it.";
+        code.select();
+      }
+    }
+
+    function pointFor(index, radiusPercent) {
+      const angle = -90 + (360 * index / totalCells);
+      const radians = angle * Math.PI / 180;
+      return {
+        x: 50 + radiusPercent * Math.cos(radians),
+        y: 50 + radiusPercent * Math.sin(radians)
+      };
+    }
+
+    function renderBoard() {
+      cellsRoot.innerHTML = "";
+      for (let i = 0; i < totalCells; i += 1) {
+        const cell = document.createElement("button");
+        const point = pointFor(i, 44);
+        cell.className = "cell";
+        cell.style.left = `${point.x}%`;
+        cell.style.top = `${point.y}%`;
+        cell.type = "button";
+
+        if (i === blackIndex) {
+          cell.classList.add("black");
+          cell.setAttribute("aria-label", "Open chain break");
+        } else {
+          if (joins.has(i)) cell.classList.add("join");
+          if (userLetters[i]) cell.classList.add("filled");
+          if (userLetters[i] && userLetters[i] !== chainLetters[i]) cell.classList.add("wrong");
+          cell.textContent = userLetters[i] || "";
+          cell.setAttribute("aria-label", `Outer chain square ${i + 1}`);
+          cell.addEventListener("click", () => highlightCell(i));
+        }
+
+        cellsRoot.appendChild(cell);
+      }
+    }
+
+    function renderLabels() {
+      labelsRoot.innerHTML = "";
+      wordRanges.forEach((range) => {
+        const midpoint = (range.start + range.end) / 2;
+        const point = pointFor(midpoint, 56);
+        const label = document.createElement("div");
+        label.className = "word-label";
+        label.style.left = `${point.x}%`;
+        label.style.top = `${point.y}%`;
+        label.textContent = range.label;
+        labelsRoot.appendChild(label);
+      });
+    }
+
+    function renderClues() {
+      cluesRoot.innerHTML = "";
+      words.forEach((word, wordIndex) => {
+        const item = document.createElement("div");
+        item.className = "clue";
+        item.dataset.word = word.answer;
+
+        const head = document.createElement("div");
+        head.className = "clue-head";
+        head.innerHTML = `<span>${wordIndex + 1}. ${word.answer.length} letters</span><span>${word.guide}</span>`;
+
+        const clue = document.createElement("p");
+        clue.textContent = word.clue;
+
+        const input = document.createElement("input");
+        input.className = "answer-input";
+        input.maxLength = word.answer.length;
+        input.placeholder = `${word.answer.length} letters`;
+        input.setAttribute("aria-label", `Answer for clue ${wordIndex + 1}`);
+        input.addEventListener("input", () => updateWord(wordIndex, input.value));
+
+        item.append(head, clue, input);
+        cluesRoot.appendChild(item);
+      });
+    }
+
+    function renderAnswerStrip(revealed = false) {
+      answerRoot.innerHTML = "";
+      finalAnswer.split("").forEach((letter, index) => {
+        const slot = document.createElement("div");
+        slot.className = "answer-slot";
+
+        const guide = document.createElement("div");
+        guide.className = "guide";
+        guide.textContent = centreGuides[index];
+
+        const box = document.createElement("div");
+        box.className = "slot-box";
+        if (revealed) {
+          box.textContent = letter;
+          box.classList.add("filled");
+        }
+
+        slot.append(guide, box);
+        answerRoot.appendChild(slot);
+      });
+    }
+
+    function chainIndexForWordLetter(wordIndex, letterIndex) {
+      const range = wordRanges[wordIndex];
+      return range.start + letterIndex;
+    }
+
+    function updateWord(wordIndex, rawValue) {
+      const value = rawValue.toUpperCase().replace(/[^A-Z]/g, "");
+      const answer = words[wordIndex].answer;
+      for (let i = 0; i < answer.length; i += 1) {
+        const chainIndex = chainIndexForWordLetter(wordIndex, i);
+        userLetters[chainIndex] = value[i] || "";
+      }
+      renderBoard();
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const filledCount = userLetters.filter(Boolean).length;
+      const wrongCount = userLetters.filter((letter, index) => letter && letter !== chainLetters[index]).length;
+      status.className = "status";
+      if (filledCount === 0) {
+        status.textContent = "";
+      } else if (wrongCount > 0) {
+        status.textContent = `${wrongCount} letter${wrongCount === 1 ? "" : "s"} do not fit the demo answer.`;
+        status.classList.add("warn");
+      } else if (filledCount === chainLetters.length) {
+        status.textContent = "Outer chain complete. Now reveal or solve the centre strip.";
+        status.classList.add("ok");
+      } else {
+        status.textContent = `${filledCount} of ${chainLetters.length} outer-chain squares filled.`;
+      }
+    }
+
+    function highlightCell(index) {
+      document.querySelectorAll(".cell").forEach((cell) => cell.classList.remove("active"));
+      const cell = cellsRoot.children[index];
+      if (cell) cell.classList.add("active");
+
+      document.querySelectorAll(".clue").forEach((clue) => clue.classList.remove("active"));
+      wordRanges.forEach((range, wordIndex) => {
+        if (index >= range.start && index <= range.end) {
+          const clue = cluesRoot.children[wordIndex];
+          if (clue) clue.classList.add("active");
+        }
+      });
+    }
+
+    function fillChain() {
+      chainLetters.split("").forEach((letter, index) => {
+        userLetters[index] = letter;
+      });
+      document.querySelectorAll(".answer-input").forEach((input, index) => {
+        input.value = words[index].answer;
+      });
+      renderBoard();
+      updateStatus();
+    }
+
+    function clearBoard() {
+      userLetters.fill("");
+      document.querySelectorAll(".answer-input").forEach((input) => {
+        input.value = "";
+      });
+      renderBoard();
+      renderAnswerStrip(false);
+      updateStatus();
+    }
+
+    document.querySelector("#fill-chain").addEventListener("click", fillChain);
+    document.querySelector("#clear").addEventListener("click", clearBoard);
+    document.querySelector("#reveal-answer").addEventListener("click", () => renderAnswerStrip(true));
+    document.querySelector("#unlock").addEventListener("click", unlockDemo);
+    code.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") unlockDemo();
+    });
+
+    renderBoard();
+    renderLabels();
+    renderClues();
+    renderAnswerStrip(false);
+  </script>
+</body>
+</html>
