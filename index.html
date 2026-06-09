@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chain Mind</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15202b;
+      --muted: #536471;
+      --line: #d8dee4;
+      --paper: #ffffff;
+      --soft: #f6f8fa;
+      --accent: #1f6feb;
+      --bad: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--soft);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      margin: 30px 0 10px;
+      padding-top: 4px;
+      border-top: 1px solid var(--line);
+      font-size: 21px;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    ul,
+    ol {
+      padding-left: 24px;
+    }
+
+    li {
+      margin: 0 0 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 18px;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--soft);
+    }
+
+    code,
+    pre {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    pre {
+      overflow-x: auto;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 6px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .error {
+      min-height: 24px;
+      margin-top: 10px;
+      color: var(--bad);
+      font-weight: 700;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 520px) {
+      main {
+        padding: 12px 10px 32px;
+      }
+
+      .panel {
+        padding: 18px 14px;
+      }
+
+      body {
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="gate" class="panel">
+      <h1>Chain Mind</h1>
+      <p class="muted">Enter the access code to read the concept note.</p>
+      <label for="code">Access code</label>
+      <input id="code" autocomplete="off" inputmode="text">
+      <button id="unlock" type="button">Open</button>
+      <p id="error" class="error" aria-live="polite"></p>
+      <p class="muted">Note: this is a light access screen for sharing, not strong security.</p>
+    </section>
+
+    <article id="content" class="panel hidden">
+      <h1>Chain Mind: Linear Crossword / Anagram Puzzle Concept</h1>
+      <p class="muted">A short explanation for Paul.</p>
+
+      <h2>The Core Idea</h2>
+      <p>The puzzle starts like a set of crossword clues. Each clue has a specific answer, usually a single word.</p>
+      <p>The answer is not the final goal by itself. One or more letters are taken from the solved answers to reveal a hidden word or phrase.</p>
+      <p>The extra twist is that the clue answers can also form a chain. The last letter of one solved answer can act as the first letter of another solved answer, so the answers can be linked into a sequence.</p>
+      <p>That gives the solver a second way to make progress:</p>
+      <ul>
+        <li>solve the clues</li>
+        <li>check the answer lengths</li>
+        <li>use first and last letters to find the chain</li>
+        <li>extract the hidden letters</li>
+        <li>reveal the final answer</li>
+      </ul>
+
+      <h2>Level 1: Simple Extraction</h2>
+      <p>In the simplest version, the answers are already in the order needed.</p>
+      <p>The solver takes the last letter of each answer and reads the hidden word.</p>
+      <table>
+        <thead>
+          <tr><th>Answer</th><th>Letter Taken</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cobb</td><td>B</td></tr>
+          <tr><td>Lea</td><td>A</td></tr>
+          <tr><td>Bright</td><td>T</td></tr>
+          <tr><td>Hoth</td><td>H</td></tr>
+        </tbody>
+      </table>
+      <p>Reading the letters in order gives:</p>
+      <pre>B A T H = BATH</pre>
+      <p>This is the clean introductory form. It teaches the extraction rule before asking the solver to find the chain order.</p>
+
+      <h2>Level 2: The Chain Is Part of the Puzzle</h2>
+      <p>The next step is to give the clues out of order.</p>
+      <p>The solver still answers the clues, but now they must use the first-letter and last-letter relationship to arrange the solved words into the intended chain.</p>
+      <ul>
+        <li>If the chain order is given, the puzzle is mostly clue solving plus extraction.</li>
+        <li>If the chain order is hidden, the puzzle becomes partly an anagram or ordering puzzle.</li>
+        <li>Answer lengths can be supplied as a helpful guide, for example: <code>3, 4, 4, 6</code>.</li>
+      </ul>
+
+      <h2>Indexed Variant: More Flexible Letter Taking</h2>
+      <p>A stronger variant gives each clue answer length and a bracketed letter position.</p>
+      <p>The number before the brackets is the length of the answer.</p>
+      <p>The number inside the brackets tells the solver which letter to take from that answer.</p>
+      <pre>7(3) means a seven-letter answer, take the third letter.
+5(1)(5) means a five-letter answer, take both the first and fifth letters.</pre>
+      <p>This gives the setter more flexibility. A word can contribute one letter, or occasionally two letters, which helps complete the final answer even when the chain is not perfect.</p>
+
+      <h2>Worked Example: PLANETS</h2>
+      <p>Suppose the final answer is:</p>
+      <pre>PLANETS</pre>
+      <p>The solved clue answers might be names of planets, fictional planets, or underworld/mythological places.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Solved Answer</th>
+            <th>Guide Shown to Solver</th>
+            <th>Letter Taken</th>
+            <th>Role in Final Answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Neptune</td><td>7(3)</td><td>P</td><td>1st letter</td></tr>
+          <tr><td>Caladan</td><td>7(3)</td><td>L</td><td>2nd letter</td></tr>
+          <tr><td>Hades</td><td>5(1)(5)</td><td>A and S</td><td>3rd and 7th letters</td></tr>
+          <tr><td>Saturn</td><td>6(6)</td><td>N</td><td>4th letter</td></tr>
+          <tr><td>Earth</td><td>5(1)</td><td>E</td><td>5th letter</td></tr>
+          <tr><td>Hoth</td><td>4(3)</td><td>T</td><td>6th letter</td></tr>
+        </tbody>
+      </table>
+      <p>The extracted letters produce:</p>
+      <pre>P L A N E T S = PLANETS</pre>
+      <p>In this example, the clue answers themselves also point towards the answer because they are all planet-like or place-like names.</p>
+      <p>That can help the solver.</p>
+      <p>For a harder version, the clue answers could come from a completely different field and only the extraction would reveal <code>PLANETS</code>.</p>
+
+      <h2>What the Solver Might Be Given</h2>
+      <p>The setter can choose how much help to provide.</p>
+      <p>A gentle version might include the theme and the answer lengths.</p>
+      <p>A harder version might give only the clues and the bracketed guides.</p>
+      <table>
+        <thead>
+          <tr><th>Element</th><th>What It Does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Theme</td><td>Helps the solver guess the field of possible answers.</td></tr>
+          <tr><td>Answer length</td><td>Confirms whether a clue answer is likely to be right.</td></tr>
+          <tr><td>Bracket position</td><td>Shows which letter to extract from the solved answer.</td></tr>
+          <tr><td>Hidden chain</td><td>Lets the solver arrange mixed clues by matching end letters to start letters.</td></tr>
+          <tr><td>Double bracket</td><td>Allows one answer to contribute two letters.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Difficulty Controls</h2>
+      <p>The same basic mechanism can be made easier or harder by changing a few dials.</p>
+      <ol>
+        <li>Easy: clues are in order, the theme is given, and each answer contributes one obvious letter.</li>
+        <li>Medium: clues are mixed, but the answers share a visible theme and the lengths are supplied.</li>
+        <li>Hard: the chain order is hidden and the final answer is only revealed by indexed extraction.</li>
+        <li>Very hard: the clue answers are from a different field, so the final answer cannot be guessed by theme alone.</li>
+      </ol>
+
+      <h2>The Key Rule to Make Clear</h2>
+      <p>Every puzzle should tell the solver how to read the extracted letters.</p>
+      <p>They might be read in clue order, in chain order, or in another specified order.</p>
+      <p>The cleanest version is usually chain order, because the solver is rewarded for solving both the clues and the sequence.</p>
+      <p>In short:</p>
+      <pre>This is a linear crossword/anagram hybrid.
+The clues produce words.
+The words form a chain.
+Selected letters from those words reveal the final answer.</pre>
+    </article>
+  </main>
+
+  <script>
+    const expectedHash = "9241aba8963820295e6cc91112a0a3d395e7885188dc5168b56feb7138ca7cd9";
+    const gate = document.querySelector("#gate");
+    const content = document.querySelector("#content");
+    const input = document.querySelector("#code");
+    const button = document.querySelector("#unlock");
+    const error = document.querySelector("#error");
+
+    async function sha256(text) {
+      const bytes = new TextEncoder().encode(text.trim().toUpperCase());
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function unlock() {
+      const hash = await sha256(input.value);
+      if (hash === expectedHash) {
+        gate.classList.add("hidden");
+        content.classList.remove("hidden");
+        error.textContent = "";
+      } else {
+        error.textContent = "That code did not open it.";
+        input.select();
+      }
+    }
+
+    button.addEventListener("click", unlock);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        unlock();
+      }
+    });
+  </script>
+</body>
+</html>
