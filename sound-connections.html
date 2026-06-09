@@ -145,6 +145,10 @@
       min-width: 0;
     }
 
+    .mobile-note {
+      display: none;
+    }
+
     .row {
       display: grid;
       grid-template-columns: minmax(220px, 1fr) 22px minmax(300px, 1.2fr);
@@ -346,6 +350,10 @@
         padding: 12px;
       }
 
+      .mobile-note {
+        display: block;
+      }
+
       .row {
         grid-template-columns: 1fr;
         gap: 8px;
@@ -366,14 +374,19 @@
       }
 
       .square {
-        width: 28px;
-        height: 28px;
+        width: clamp(24px, 7.5vw, 28px);
+        height: clamp(24px, 7.5vw, 28px);
         font-size: 14px;
       }
 
       .answer-line,
       .category {
         grid-template-columns: 1fr;
+      }
+
+      .button,
+      .mini-button {
+        width: 100%;
       }
     }
   </style>
@@ -399,6 +412,7 @@
     <section class="layout">
       <div class="panel">
         <h2>Puzzle Grid</h2>
+        <p class="muted mobile-note">On a phone, each clue stacks under its matching left-hand answer.</p>
         <div class="puzzle" id="puzzle"></div>
         <div class="category">
           <input id="category" autocomplete="off" placeholder="Connection">
