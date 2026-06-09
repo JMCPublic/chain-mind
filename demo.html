@@ -102,6 +102,25 @@
       margin: 8px auto 0;
     }
 
+    .board-instruction {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 4px auto 12px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .board-instruction span {
+      border: 2px solid var(--line);
+      background: #fff;
+      padding: 5px 8px;
+    }
+
     .ring {
       position: absolute;
       inset: 0;
@@ -115,30 +134,23 @@
     .direction-label {
       position: absolute;
       left: 50%;
-      top: 2.5%;
+      top: 8.5%;
       transform: translateX(-50%);
       z-index: 2;
-      border: 2px solid var(--line);
-      background: #fff;
-      padding: 5px 8px;
-      font-size: 13px;
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 16px solid var(--black);
+      padding: 0;
+      font-size: 0;
       font-weight: 800;
       text-transform: uppercase;
       text-align: center;
-      white-space: nowrap;
     }
 
     .direction-label::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: calc(100% + 2px);
-      width: 0;
-      height: 0;
-      transform: translateX(-50%);
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 11px solid var(--black);
+      content: none;
     }
 
     .cell {
@@ -197,10 +209,10 @@
     .start-note {
       position: absolute;
       left: 48%;
-      top: 10.5%;
+      top: 13.5%;
       transform: translateX(-50%);
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       pointer-events: none;
@@ -503,9 +515,10 @@
       <div class="panel board-panel">
         <h2>Outer Chain And Centre Answer</h2>
         <p class="muted mobile-note">Tip: on a phone, use the clue boxes below. The circle updates as you type.</p>
+        <div class="board-instruction"><span>Start after the black square</span><span>Travel clockwise</span></div>
         <div class="board" aria-label="Circular Chain Mind board">
           <div class="ring"></div>
-          <div class="direction-label">Start after black square<br>travel clockwise</div>
+          <div class="direction-label" aria-hidden="true"></div>
           <div class="start-note">First answer begins here</div>
           <div id="cells"></div>
           <div id="labels"></div>
