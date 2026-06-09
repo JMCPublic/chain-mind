@@ -7,17 +7,17 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #17202a;
-      --muted: #5d6875;
+      --ink: #111111;
+      --muted: #4a4a4a;
       --paper: #ffffff;
-      --soft: #f4f6f8;
-      --line: #cfd7df;
-      --strong: #223142;
-      --accent: #0f766e;
-      --accent-soft: #d9f2ee;
-      --warn: #9f3412;
-      --black: #121417;
-      --ok: #0f7b3f;
+      --soft: #f5f5f5;
+      --line: #111111;
+      --strong: #111111;
+      --accent: #111111;
+      --accent-soft: #e9e9e9;
+      --warn: #111111;
+      --black: #111111;
+      --ok: #111111;
     }
 
     * {
@@ -26,7 +26,7 @@
 
     body {
       margin: 0;
-      background: var(--soft);
+      background: #ffffff;
       color: var(--ink);
       font-family: Arial, Helvetica, sans-serif;
       font-size: 16px;
@@ -87,7 +87,7 @@
     .panel {
       background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 0;
       padding: 16px;
     }
 
@@ -106,10 +106,39 @@
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      border: 2px solid #d9e0e7;
+      border: 2px solid var(--line);
       background:
-        radial-gradient(circle, transparent 0 43%, rgba(15, 118, 110, 0.06) 43.5% 57%, transparent 57.5%),
+        radial-gradient(circle, transparent 0 42%, rgba(0, 0, 0, 0.04) 42.5% 57%, transparent 57.5%),
         var(--paper);
+    }
+
+    .direction-label {
+      position: absolute;
+      left: 50%;
+      top: 2.5%;
+      transform: translateX(-50%);
+      z-index: 2;
+      border: 2px solid var(--line);
+      background: #fff;
+      padding: 5px 8px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .direction-label::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 2px);
+      width: 0;
+      height: 0;
+      transform: translateX(-50%);
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 11px solid var(--black);
     }
 
     .cell {
@@ -130,7 +159,7 @@
 
     .cell.join {
       border: 3px solid var(--strong);
-      background: #fffef7;
+      background: #fff;
     }
 
     .cell.black {
@@ -146,11 +175,11 @@
     }
 
     .cell.filled {
-      background: #eefaf7;
+      background: #efefef;
     }
 
     .cell.wrong {
-      background: #fff3ed;
+      background: #dcdcdc;
       border-color: var(--warn);
     }
 
@@ -162,6 +191,18 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .start-note {
+      position: absolute;
+      left: 48%;
+      top: 10.5%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
       pointer-events: none;
     }
 
@@ -210,8 +251,8 @@
     }
 
     .slot-box.filled {
-      background: var(--accent-soft);
-      color: #064e46;
+      background: #efefef;
+      color: var(--black);
     }
 
     .controls {
@@ -224,7 +265,7 @@
     .button {
       min-height: 40px;
       border: 1px solid var(--accent);
-      border-radius: 6px;
+      border-radius: 0;
       background: var(--accent);
       color: white;
       padding: 8px 12px;
@@ -244,14 +285,14 @@
 
     .clue {
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 0;
       padding: 10px;
       background: #fff;
     }
 
     .clue.active {
       border-color: var(--accent);
-      background: #f0fbf8;
+      background: #f0f0f0;
     }
 
     .clue-head {
@@ -262,11 +303,28 @@
       font-weight: 700;
     }
 
+    .clue-code {
+      display: inline-block;
+      min-width: 58px;
+      border: 2px solid var(--black);
+      padding: 2px 5px;
+      text-align: center;
+      font-weight: 800;
+      background: #fff;
+    }
+
+    .clue-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+    }
+
     .answer-input {
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 0;
       padding: 8px;
       text-transform: uppercase;
     }
@@ -303,7 +361,7 @@
 
     .legend-swatch.join {
       border: 3px solid var(--strong);
-      background: #fffef7;
+      background: #fff;
     }
 
     .legend-swatch.black {
@@ -320,7 +378,7 @@
       margin: 32px auto;
       background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 0;
       padding: 18px;
     }
 
@@ -447,6 +505,8 @@
         <p class="muted mobile-note">Tip: on a phone, use the clue boxes below. The circle updates as you type.</p>
         <div class="board" aria-label="Circular Chain Mind board">
           <div class="ring"></div>
+          <div class="direction-label">Start after black square<br>travel clockwise</div>
+          <div class="start-note">First answer begins here</div>
           <div id="cells"></div>
           <div id="labels"></div>
           <div class="centre">
@@ -462,8 +522,8 @@
       <aside class="panel">
         <h2>How To Play</h2>
         <p>Solve the clues, then place the answers into the outer circle so the last letter of one answer is the first letter of the next.</p>
-        <p>The thick-border boxes are shared chain letters. The black square marks the break in this open-chain version.</p>
-        <p>Then use the centre guides, such as <strong>7(3)</strong>, to take letters from the solved outer answers and fill the final answer strip.</p>
+        <p>Start after the black square and travel clockwise. The thick-border boxes are shared chain letters. The black square marks the break in this open-chain version.</p>
+        <p>Each clue shows its extraction guide, such as <strong>7(3)</strong>: a 7-letter answer, taking the 3rd letter for the centre strip.</p>
 
         <h3>Clues</h3>
         <div class="clue-list" id="clues"></div>
@@ -613,7 +673,7 @@
 
         const head = document.createElement("div");
         head.className = "clue-head";
-        head.innerHTML = `<span>${wordIndex + 1}. ${word.answer.length} letters</span><span>${word.guide}</span>`;
+        head.innerHTML = `<span>${wordIndex + 1}. <span class="clue-code">${word.guide}</span></span><span class="clue-meta">${word.answer.length} letters, take ${word.extraction.map((item) => item.index + 1).join(" and ")}</span>`;
 
         const clue = document.createElement("p");
         clue.textContent = word.clue;
